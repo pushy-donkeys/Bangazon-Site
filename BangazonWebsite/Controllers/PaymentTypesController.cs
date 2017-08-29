@@ -7,27 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BangazonWebsite.Data;
 using BangazonWebsite.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace BangazonWebsite.Controllers
 {
-    public class OrdersController : Controller
+    public class PaymentTypesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public OrdersController(ApplicationDbContext context)
+        public PaymentTypesController(ApplicationDbContext context)
         {
             _context = context;    
         }
 
-        // GET: Orders
+        // GET: PaymentTypes
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Order.Include(o => o.PaymentType);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _context.PaymentType.ToListAsync());
         }
 
-        // GET: Orders/Details/5
+        // GET: PaymentTypes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -35,44 +33,39 @@ namespace BangazonWebsite.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order
-                .Include(o => o.PaymentType)
-                .SingleOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
+            var paymentType = await _context.PaymentType
+                .SingleOrDefaultAsync(m => m.PaymentTypeId == id);
+            if (paymentType == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(paymentType);
         }
 
-        // GET: Orders/Create
+        // GET: PaymentTypes/Create
         public IActionResult Create()
         {
-            ViewData["PaymentTypeId"] = new SelectList(_context.Set<PaymentType>(), "PaymentTypeId", "AccountNumber");
             return View();
         }
 
-        // POST: Orders/Create
+        // POST: PaymentTypes/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Create([Bind("OrderId,PaymentTypeId")] Order order)
+        public async Task<IActionResult> Create([Bind("PaymentTypeId,Description,AccountNumber")] PaymentType paymentType)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(order);
+                _context.Add(paymentType);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.Set<PaymentType>(), "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
-            return View(order);
+            return View(paymentType);
         }
 
-        // GET: Orders/Edit/5
-        [Authorize]
+        // GET: PaymentTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,24 +73,22 @@ namespace BangazonWebsite.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order.SingleOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
+            var paymentType = await _context.PaymentType.SingleOrDefaultAsync(m => m.PaymentTypeId == id);
+            if (paymentType == null)
             {
                 return NotFound();
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.Set<PaymentType>(), "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
-            return View(order);
+            return View(paymentType);
         }
 
-        // POST: Orders/Edit/5
+        // POST: PaymentTypes/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderId,PaymentTypeId")] Order order)
+        public async Task<IActionResult> Edit(int id, [Bind("PaymentTypeId,Description,AccountNumber")] PaymentType paymentType)
         {
-            if (id != order.OrderId)
+            if (id != paymentType.PaymentTypeId)
             {
                 return NotFound();
             }
@@ -106,12 +97,12 @@ namespace BangazonWebsite.Controllers
             {
                 try
                 {
-                    _context.Update(order);
+                    _context.Update(paymentType);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OrderExists(order.OrderId))
+                    if (!PaymentTypeExists(paymentType.PaymentTypeId))
                     {
                         return NotFound();
                     }
@@ -122,12 +113,10 @@ namespace BangazonWebsite.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.Set<PaymentType>(), "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
-            return View(order);
+            return View(paymentType);
         }
 
-        // GET: Orders/Delete/5
-        [Authorize]
+        // GET: PaymentTypes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -135,32 +124,30 @@ namespace BangazonWebsite.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order
-                .Include(o => o.PaymentType)
-                .SingleOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
+            var paymentType = await _context.PaymentType
+                .SingleOrDefaultAsync(m => m.PaymentTypeId == id);
+            if (paymentType == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(paymentType);
         }
 
-        // POST: Orders/Delete/5
+        // POST: PaymentTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = await _context.Order.SingleOrDefaultAsync(m => m.OrderId == id);
-            _context.Order.Remove(order);
+            var paymentType = await _context.PaymentType.SingleOrDefaultAsync(m => m.PaymentTypeId == id);
+            _context.PaymentType.Remove(paymentType);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
-        private bool OrderExists(int id)
+        private bool PaymentTypeExists(int id)
         {
-            return _context.Order.Any(e => e.OrderId == id);
+            return _context.PaymentType.Any(e => e.PaymentTypeId == id);
         }
     }
 }

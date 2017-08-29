@@ -23,5 +23,16 @@ namespace BangazonWebsite.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "City")]
+        public string city { get; set; }
+
+        [Display(Name = "First Name")]
+        public string firstname { get; set; }
+        [Display(Name = "Last Name")]
+        public string lastname { get; set; }
+        [Display(Name = "Street Address")]
+        public string streetaddress { get; set; }
+
     }
 }

@@ -7,27 +7,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BangazonWebsite.Data;
 using BangazonWebsite.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace BangazonWebsite.Controllers
 {
-    public class OrdersController : Controller
+    public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public OrdersController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext context)
         {
             _context = context;    
         }
 
-        // GET: Orders
+        // GET: Products
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Order.Include(o => o.PaymentType);
+            var applicationDbContext = _context.Product.Include(p => p.ProductType);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Orders/Details/5
+        // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -35,44 +34,42 @@ namespace BangazonWebsite.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order
-                .Include(o => o.PaymentType)
-                .SingleOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
+            var product = await _context.Product
+                .Include(p => p.ProductType)
+                .SingleOrDefaultAsync(m => m.ProductId == id);
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(product);
         }
 
-        // GET: Orders/Create
+        // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["PaymentTypeId"] = new SelectList(_context.Set<PaymentType>(), "PaymentTypeId", "AccountNumber");
+            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId");
             return View();
         }
 
-        // POST: Orders/Create
+        // POST: Products/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Create([Bind("OrderId,PaymentTypeId")] Order order)
+        public async Task<IActionResult> Create([Bind("ProductId,Quantity,Title,Description,Price,DateCreated,City,LocalDelivery,ImgPath,ProductTypeId")] Product product)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(order);
+                _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.Set<PaymentType>(), "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
-            return View(order);
+            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId", product.ProductTypeId);
+            return View(product);
         }
 
-        // GET: Orders/Edit/5
-        [Authorize]
+        // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,24 +77,23 @@ namespace BangazonWebsite.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order.SingleOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
+            var product = await _context.Product.SingleOrDefaultAsync(m => m.ProductId == id);
+            if (product == null)
             {
                 return NotFound();
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.Set<PaymentType>(), "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
-            return View(order);
+            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId", product.ProductTypeId);
+            return View(product);
         }
 
-        // POST: Orders/Edit/5
+        // POST: Products/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderId,PaymentTypeId")] Order order)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Quantity,Title,Description,Price,DateCreated,City,LocalDelivery,ImgPath,ProductTypeId")] Product product)
         {
-            if (id != order.OrderId)
+            if (id != product.ProductId)
             {
                 return NotFound();
             }
@@ -106,12 +102,12 @@ namespace BangazonWebsite.Controllers
             {
                 try
                 {
-                    _context.Update(order);
+                    _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OrderExists(order.OrderId))
+                    if (!ProductExists(product.ProductId))
                     {
                         return NotFound();
                     }
@@ -122,12 +118,11 @@ namespace BangazonWebsite.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.Set<PaymentType>(), "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
-            return View(order);
+            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId", product.ProductTypeId);
+            return View(product);
         }
 
-        // GET: Orders/Delete/5
-        [Authorize]
+        // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -135,32 +130,31 @@ namespace BangazonWebsite.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order
-                .Include(o => o.PaymentType)
-                .SingleOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
+            var product = await _context.Product
+                .Include(p => p.ProductType)
+                .SingleOrDefaultAsync(m => m.ProductId == id);
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(product);
         }
 
-        // POST: Orders/Delete/5
+        // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = await _context.Order.SingleOrDefaultAsync(m => m.OrderId == id);
-            _context.Order.Remove(order);
+            var product = await _context.Product.SingleOrDefaultAsync(m => m.ProductId == id);
+            _context.Product.Remove(product);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
-        private bool OrderExists(int id)
+        private bool ProductExists(int id)
         {
-            return _context.Order.Any(e => e.OrderId == id);
+            return _context.Product.Any(e => e.ProductId == id);
         }
     }
 }
