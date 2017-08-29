@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BangazonWebsite", "BangazonWebsite\BangazonWebsite.csproj", "{C7BD5D31-C590-40BB-83B9-21B030C2F704}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C7BD5D31-C590-40BB-83B9-21B030C2F704}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7BD5D31-C590-40BB-83B9-21B030C2F704}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7BD5D31-C590-40BB-83B9-21B030C2F704}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7BD5D31-C590-40BB-83B9-21B030C2F704}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B2973F9E-FFFC-4B22-8A2F-A283C1AD7FA7}
+	EndGlobalSection
+EndGlobal
