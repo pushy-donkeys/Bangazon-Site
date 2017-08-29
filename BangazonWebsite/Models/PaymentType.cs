@@ -9,10 +9,8 @@ namespace BangazonWebsite.Models
 {
     public class PaymentType
 	{
-
-        [DataType(DataType.Date)]
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime DateCreated { get; set; }
+        [Key]
+        public int PaymentTypeId { get; set; }
     
         [Required]
         [StringLength(12)]
