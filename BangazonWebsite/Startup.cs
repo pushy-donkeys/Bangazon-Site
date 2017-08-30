@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using BangazonWebsite.Data;
 using BangazonWebsite.Models;
 using BangazonWebsite.Services;
+using Bangazon.Data;
 
 namespace BangazonWebsite
 {
@@ -74,6 +75,7 @@ namespace BangazonWebsite
             app.UseStaticFiles();
 
             app.UseIdentity();
+            DbInitializer.Initialize(app.ApplicationServices);
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
 
