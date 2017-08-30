@@ -8,20 +8,26 @@ using Microsoft.EntityFrameworkCore;
 using BangazonWebsite.Data;
 using BangazonWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using BangazonWebsite.Models.ViewModels;
 
 namespace BangazonWebsite.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext ctx, UserManager<ApplicationUser> userManager)
         {
-            _context = context;    
+            _userManager = userManager;
+            _context = ctx;
         }
 
+        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+
         // GET: Products
-       
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Product.Include(p => p.ProductType);
@@ -50,10 +56,13 @@ namespace BangazonWebsite.Controllers
 
         // GET: Products/Create
         [Authorize]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId");
-            return View();
+
+            ProductCreateViewModel model = new ProductCreateViewModel(_context);
+            model.Product = new Product();
+            var user = await GetCurrentUserAsync();
+            return View(model);
         }
 
         // POST: Products/Create
@@ -62,75 +71,50 @@ namespace BangazonWebsite.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Create([Bind("ProductId,Quantity,Title,Description,Price,DateCreated,City,LocalDelivery,ImgPath,ProductTypeId")] Product product)
+        public async Task<IActionResult> Create( ProductCreateViewModel model)
         {
+            ModelState.Remove("product.User");
             if (ModelState.IsValid)
             {
-                _context.Add(product);
+                var user = await GetCurrentUserAsync();
+                model.Product.User = user;
+                _context.Add(model.Product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId", product.ProductTypeId);
-            return View(product);
+            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId", model.Product.ProductTypeId);
+            ProductCreateViewModel model2 = new ProductCreateViewModel(_context);
+            return View(model2);
+
         }
 
-        // GET: Products/Edit/5
-        [Authorize]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Types()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var model = new ProductTypeViewModel();
 
-            var product = await _context.Product.SingleOrDefaultAsync(m => m.ProductId == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId", product.ProductTypeId);
-            return View(product);
+            // Get line items grouped by product id, including count
+            var counter = from product in _context.Product
+                          group product by product.ProductTypeId into grouped
+                          select new { grouped.Key, myCount = grouped.Count() };
+
+            // Build list of Product Type instances for display in view
+            model.ProductTypes = await (from type in _context.ProductType
+                                        join a in counter on type.ProductTypeId equals a.Key
+                                        select new ProductType
+                                        {
+                                            ProductTypeId = type.ProductTypeId,
+                                            Label = type.Label
+                                        }).ToListAsync();
+
+            return View(model);
         }
 
-        // POST: Products/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Quantity,Title,Description,Price,DateCreated,City,LocalDelivery,ImgPath,ProductTypeId")] Product product)
+        public IActionResult Error()
         {
-            if (id != product.ProductId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.ProductId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction("Index");
-            }
-            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId", product.ProductTypeId);
-            return View(product);
+            return View();
         }
-
-        // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+            // GET: Products/Delete/5
+            public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
