@@ -21,7 +21,7 @@ namespace BangazonWebsite.Controllers
         }
 
         // GET: Products
-        [Authorize]
+       
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Product.Include(p => p.ProductType);
