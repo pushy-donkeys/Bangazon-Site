@@ -21,6 +21,7 @@ namespace BangazonWebsite.Controllers
         }
 
         // GET: Orders
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Order.Include(o => o.PaymentType);
@@ -28,6 +29,7 @@ namespace BangazonWebsite.Controllers
         }
 
         // GET: Orders/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -47,6 +49,7 @@ namespace BangazonWebsite.Controllers
         }
 
         // GET: Orders/Create
+        [Authorize]
         public IActionResult Create()
         {
             ViewData["PaymentTypeId"] = new SelectList(_context.Set<PaymentType>(), "PaymentTypeId", "AccountNumber");

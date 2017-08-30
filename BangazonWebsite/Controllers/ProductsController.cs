@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BangazonWebsite.Data;
 using BangazonWebsite.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BangazonWebsite.Controllers
 {
@@ -20,6 +21,7 @@ namespace BangazonWebsite.Controllers
         }
 
         // GET: Products
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Product.Include(p => p.ProductType);
@@ -27,6 +29,7 @@ namespace BangazonWebsite.Controllers
         }
 
         // GET: Products/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,6 +49,7 @@ namespace BangazonWebsite.Controllers
         }
 
         // GET: Products/Create
+        [Authorize]
         public IActionResult Create()
         {
             ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "ProductTypeId");
@@ -57,6 +61,7 @@ namespace BangazonWebsite.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("ProductId,Quantity,Title,Description,Price,DateCreated,City,LocalDelivery,ImgPath,ProductTypeId")] Product product)
         {
             if (ModelState.IsValid)
@@ -70,6 +75,7 @@ namespace BangazonWebsite.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -91,6 +97,7 @@ namespace BangazonWebsite.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,Quantity,Title,Description,Price,DateCreated,City,LocalDelivery,ImgPath,ProductTypeId")] Product product)
         {
             if (id != product.ProductId)
