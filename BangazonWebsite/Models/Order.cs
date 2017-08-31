@@ -12,7 +12,7 @@ namespace BangazonWebsite.Models
         [Key]
         public int OrderId { get; set; }
 
-        public int PaymentTypeId { get; set; }
+        public int? PaymentTypeId { get; set; }
 
         public PaymentType PaymentType { get; set; }
 

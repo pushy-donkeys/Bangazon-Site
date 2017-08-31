@@ -54,6 +54,50 @@ namespace BangazonWebsite.Controllers
             return View(product);
         }
 
+        // POST: Products/Details
+        [HttpPost]
+        public async Task<IActionResult> AddToOrder (int ProductId)
+        {
+            var model = new OrderViewModel();
+            //Brings back the product we want to add
+            //_context.Product loops through all products and finds the one (p.ProductId) that matches ProductId (the one selected to add)
+           var prod = await _context.Product
+                .SingleOrDefaultAsync(p => p.ProductId == ProductId);
+
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            //check for orders
+            //first checking if user on order is the same as current user, and if PT is null (incomplete order)
+            var currentOrders = await _context.Order
+                .SingleOrDefaultAsync(m => m.User == user && m.PaymentTypeId == null);
+
+            //add product to order
+            //with SingleOrDEfault, if nothing comes back it is null
+            if (currentOrders == null)
+            {
+                //create Order instance and pass in user to create order
+                Order order = new Order() { User = user };
+                _context.Order.Add(order);
+                //create OrderProduct instance to make an OrderProduct
+                OrderProduct op = new OrderProduct() { ProductId = prod.ProductId, OrderId = order.OrderId };
+                _context.OrderProduct.Add(op);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", "Orders", new { id = order.OrderId });
+            }
+            else
+            {
+                //if there IS an order and you don't need to create one, add product to order
+                OrderProduct op = new OrderProduct() { ProductId = prod.ProductId, OrderId = currentOrders.OrderId };
+                _context.OrderProduct.Add(op);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Details", "Orders", new { id = currentOrders.OrderId });
+        }
+
         // GET: Products/Create
         [Authorize]
         public async Task<IActionResult> Create()
