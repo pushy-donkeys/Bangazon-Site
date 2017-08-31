@@ -10,6 +10,9 @@ using BangazonWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using BangazonWebsite.Models.ViewModels;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using System.Net.Http.Headers;
 
 namespace BangazonWebsite.Controllers
 {
@@ -17,12 +20,16 @@ namespace BangazonWebsite.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private IHostingEnvironment _environment;
 
-        public ProductsController(ApplicationDbContext ctx, UserManager<ApplicationUser> userManager)
+        public ProductsController(ApplicationDbContext ctx, UserManager<ApplicationUser> userManager, IHostingEnvironment environment)
         {
             _userManager = userManager;
             _context = ctx;
+            _environment = environment;
+           
         }
+       
 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
@@ -76,6 +83,23 @@ namespace BangazonWebsite.Controllers
             ModelState.Remove("product.User");
             if (ModelState.IsValid)
             {
+
+                long size = 0;
+                foreach (var file in model.image)
+                {
+                    var filename = ContentDispositionHeaderValue
+                                    .Parse(file.ContentDisposition)
+                                    .FileName
+                                    .Trim('"');
+                    filename = _environment.WebRootPath + $@"\products\{file.FileName.Split('\\').Last()}";
+                    size += file.Length;
+                    using (var fileStream = new FileStream(filename, FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileStream);
+                        model.Product.ImgPath= $@"\products\{file.FileName.Split('\\').Last()}";
+                    }
+                }
+
                 var user = await GetCurrentUserAsync();
                 model.Product.User = user;
                 _context.Add(model.Product);

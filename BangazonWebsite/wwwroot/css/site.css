@@ -40,6 +40,9 @@ textarea {
 .carousel-inner .item img[src$=".svg"] {
     width: 100%;
 }
+.prodImage{
+    max-width: 75px;
+}
 
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {

@@ -1,4 +1,5 @@
 ﻿using BangazonWebsite.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -35,5 +36,6 @@ namespace BangazonWebsite.Models.ViewModels
         {
 
         }
+        public List<IFormFile> image { get; set; } = new List<IFormFile>();
     }
 }
