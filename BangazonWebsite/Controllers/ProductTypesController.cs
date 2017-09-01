@@ -7,22 +7,35 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BangazonWebsite.Data;
 using BangazonWebsite.Models;
+using BangazonWebsite.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace BangazonWebsite.Controllers
 {
     public class ProductTypesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProductTypesController(ApplicationDbContext context)
+        public ProductTypesController(ApplicationDbContext ctx, UserManager<ApplicationUser> userManager)
         {
-            _context = context;    
+            _userManager = userManager;
+            _context = ctx;
         }
+
+        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+
+        
 
         // GET: ProductTypes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ProductType.ToListAsync());
+            ProductTypeIndexViewModel model = new ProductTypeIndexViewModel(_context);
+            var user = await GetCurrentUserAsync();
+            return View(model);
+
+           // return View(await _context.ProductType.ToListAsync());
         }
 
         // GET: ProductTypes/Details/5
@@ -35,6 +48,9 @@ namespace BangazonWebsite.Controllers
 
             var productType = await _context.ProductType
                 .SingleOrDefaultAsync(m => m.ProductTypeId == id);
+
+            productType.Products = _context.Product.Where(x => x.ProductTypeId == id).ToList();
+
             if (productType == null)
             {
                 return NotFound();

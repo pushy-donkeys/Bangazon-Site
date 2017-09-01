@@ -10,9 +10,6 @@ using BangazonWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using BangazonWebsite.Models.ViewModels;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using System.Net.Http.Headers;
 
 namespace BangazonWebsite.Controllers
 {
@@ -20,16 +17,12 @@ namespace BangazonWebsite.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private IHostingEnvironment _environment;
 
-        public ProductsController(ApplicationDbContext ctx, UserManager<ApplicationUser> userManager, IHostingEnvironment environment)
+        public ProductsController(ApplicationDbContext ctx, UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
             _context = ctx;
-            _environment = environment;
-           
         }
-       
 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
@@ -39,6 +32,24 @@ namespace BangazonWebsite.Controllers
         {
             var applicationDbContext = _context.Product.Include(p => p.ProductType);
             return View(await applicationDbContext.ToListAsync());
+        }
+
+        //GET SEARCH PRODUCT
+        [Authorize]
+        public async Task<IActionResult> Search(string searchFor, string searchText)
+        {
+            ProductListViewModel viewModel = new ProductListViewModel();
+           
+            if(!String.IsNullOrEmpty(searchText) && searchFor.Equals("Product"))
+            {
+                viewModel.product = await _context.Product.Where(s => s.Title.ToLower().Contains(searchText.ToLower()) || s.Description.ToLower().Contains(searchText.ToLower())).ToListAsync();
+            }
+            else if(!String.IsNullOrEmpty(searchText) && searchFor.Equals("LocalDelivery"))
+            {
+                viewModel.product = await _context.Product.Where(l => l.LocalDelivery.Equals(true) && l.City.ToLower().Contains(searchText.ToLower())).ToListAsync();
+            }
+
+            return View(viewModel);
         }
 
         // GET: Products/Details/5
@@ -127,23 +138,6 @@ namespace BangazonWebsite.Controllers
             ModelState.Remove("product.User");
             if (ModelState.IsValid)
             {
-
-                long size = 0;
-                foreach (var file in model.image)
-                {
-                    var filename = ContentDispositionHeaderValue
-                                    .Parse(file.ContentDisposition)
-                                    .FileName
-                                    .Trim('"');
-                    filename = _environment.WebRootPath + $@"\products\{file.FileName.Split('\\').Last()}";
-                    size += file.Length;
-                    using (var fileStream = new FileStream(filename, FileMode.Create))
-                    {
-                        await file.CopyToAsync(fileStream);
-                        model.Product.ImgPath= $@"\products\{file.FileName.Split('\\').Last()}";
-                    }
-                }
-
                 var user = await GetCurrentUserAsync();
                 model.Product.User = user;
                 _context.Add(model.Product);
