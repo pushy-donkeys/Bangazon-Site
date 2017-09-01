@@ -15,6 +15,7 @@ namespace BangazonWebsite.Controllers
 {
     public class OrdersController : Controller
     {
+        //necessary for getting user id:
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private IHostingEnvironment _environment;
