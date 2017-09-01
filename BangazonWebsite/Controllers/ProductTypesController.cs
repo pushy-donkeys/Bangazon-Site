@@ -35,6 +35,9 @@ namespace BangazonWebsite.Controllers
 
             var productType = await _context.ProductType
                 .SingleOrDefaultAsync(m => m.ProductTypeId == id);
+
+            productType.Products = _context.Product.Where(x => x.ProductTypeId == id).ToList();
+
             if (productType == null)
             {
                 return NotFound();
