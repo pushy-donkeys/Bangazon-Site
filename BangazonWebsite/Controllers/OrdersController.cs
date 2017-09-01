@@ -36,9 +36,12 @@ namespace BangazonWebsite.Controllers
             {
                 return NotFound();
             }
-
+            //include orderproduct and then include product to show them on shopping cart
             var order = await _context.Order
                 .Include(o => o.PaymentType)
+                .Include(o => o.OrderProduct)
+                .ThenInclude(o => o.Product)
+                // 'm' is each order in database, id is the one we are clicking
                 .SingleOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {

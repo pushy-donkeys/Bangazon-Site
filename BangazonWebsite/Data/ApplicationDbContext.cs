@@ -28,6 +28,7 @@ namespace BangazonWebsite.Data
         public DbSet<BangazonWebsite.Models.Order> Order { get; set; }
         public DbSet<BangazonWebsite.Models.PaymentType> PaymentType { get; set; }
         public DbSet<BangazonWebsite.Models.Product> Product { get; set; }
+        public DbSet<BangazonWebsite.Models.OrderProduct> OrderProduct { get; set; }
 
     }
 }

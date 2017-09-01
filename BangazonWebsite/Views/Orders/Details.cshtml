@@ -18,6 +18,14 @@
         </dd>
     </dl>
 </div>
+@*Loop through OrderProduct ICollection*@
+
+@foreach (var orderproduct in Model.OrderProduct)
+{
+    <p>@orderproduct.Product.Title</p>
+    <p>@orderproduct.Product.Price</p>
+    <p>@orderproduct.Product.Quantity</p>
+}
 <div>
     <a asp-action="Edit" asp-route-id="@Model.OrderId">Edit</a> |
     <a asp-action="Index">Back to List</a>
