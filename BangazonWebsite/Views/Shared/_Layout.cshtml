@@ -38,14 +38,19 @@
                     <li><a asp-area="" asp-controller="Orders" asp-action="Index">Shopping Cart</a></li>
                 </ul>
                 <div class="navbar-left" style="margin-top:8px;">
-                    @using (Html.BeginForm("Index", "Search", FormMethod.Get))
-                    {
+                    <form asp-controller="Products" asp-action="Search" method="get">
                         <ul class="nav navbar-nav">
-                            <li>@Html.TextBox("id", ViewBag.CurrentFilter as string)</li>
+                            <li>
+                                <select name="SearchFor" class="nav navbar-nav">
+                                    <option value="Product">Products</option>"
+                                    <option value="LocalDelivery">Local Delivery</option>
+                                </select>
+                            </li>
+                            <li><input type="text" name="SearchText" /></li>
                             <li><input type="submit" value="Search" /></li>
                         </ul>
-                    }
-                </div>
+                        </form>
+</div>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
