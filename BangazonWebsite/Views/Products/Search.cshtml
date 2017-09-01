@@ -12,6 +12,7 @@
         <tr>
             <th>Title</th>
             <th>Description</th>
+            <th>City</th>
             <th>Posted</th>
             <th>Price</th>
         </tr>
@@ -26,7 +27,9 @@
                 </a>
             </td>
             <td>@Html.DisplayFor(modelItem => product.Description)</td>
+            <td>@Html.DisplayFor(modelItem => product.City)</td>
             <td>@Html.DisplayFor(modelItem => product.DateCreated)</td>
+            
             <td>@Html.DisplayFor(modelItem => product.Price)</td>
         </tr>
     }

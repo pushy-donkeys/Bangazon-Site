@@ -46,7 +46,7 @@ namespace BangazonWebsite.Controllers
             }
             else if(!String.IsNullOrEmpty(searchText) && searchFor.Equals("LocalDelivery"))
             {
-                viewModel.product = await _context.Product.Where(s => s.Title.ToLower().Contains(searchText.ToLower()) || s.Description.ToLower().Contains(searchText.ToLower())).ToListAsync();
+                viewModel.product = await _context.Product.Where(l => l.LocalDelivery.Equals(true) && l.City.ToLower().Contains(searchText.ToLower())).ToListAsync();
             }
 
             return View(viewModel);
