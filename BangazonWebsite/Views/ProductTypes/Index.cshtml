@@ -1,33 +1,21 @@
-@model IEnumerable<BangazonWebsite.Models.ProductType>
 
+
+<!--- @**@ model IEnumerable<BangazonWebsite.Models.ProductType>   --->
+
+@Model  BangazonWebsite.Models.ViewModels.ProductTypeIndexViewModel
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Product Type Listing";
 }
 
-<h2>Index</h2>
+<h2>@ViewData["Title"]</h2>
 
-
-<table class="table">
-    <thead>
-        <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Label)
-                </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Label)
-            </td>
-            <td>
-                
-                <a asp-action="Details" asp-route-id="@item.ProductTypeId">Details</a> |
-                
-            </td>
-        </tr>
+@foreach (var types in Model.TypesList)
+{
+    @types
+    <div class="row top-buffer">
+        <div class="col-md-8">@types.TypeName</div>
+        <div class="col-md-2">@types.ProductCount</div>
+        <div class="col-md-2">
+        </div> 
+    </div>
 }
-    </tbody>
-</table>
