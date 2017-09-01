@@ -6,10 +6,9 @@
 
 <h2>Details</h2>
 
-<div>
     <h4>ProductType</h4>
     <hr />
-    <dl class="dl-horizontal">
+    
         <dt>
             @Html.DisplayNameFor(model => model.Label)
         </dt>
@@ -21,16 +20,34 @@
         <dt>
             @Html.LabelFor(model => model.Products, "Products")
         </dt>
-        @foreach (var x in Model.Products)
-        {
-            <dd>
-                @x.Title @x.Quantity @x.Price
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
 
-            </dd>
+            @foreach (var x in Model.Products)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@x.ProductId" asp-controller="Products">
+                            @Html.DisplayFor(modelItem => x.Title)
+                        </a>
+                    </td>
 
-        }
-    </dl>
-</div>
+                    <td>@Html.DisplayFor(modelItem => x.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => x.Quantity)</td>
+                    <td>@Html.DisplayFor(modelItem => x.Price)</td>
+
+                </tr>
+
+            }
+
+        </table>  
+
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
