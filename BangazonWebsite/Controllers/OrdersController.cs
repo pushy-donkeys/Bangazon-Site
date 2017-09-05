@@ -8,12 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using BangazonWebsite.Data;
 using BangazonWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using BangazonWebsite.Models.ViewModels;
 
 namespace BangazonWebsite.Controllers
 {
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public OrdersController(ApplicationDbContext context)
         {
@@ -162,6 +165,21 @@ namespace BangazonWebsite.Controllers
             _context.Order.Remove(order);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OrderHistory(int? id)
+        {
+            var opvm = new OrderProductViewModel(id, _context);
+
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+
+            return View(opvm);
         }
 
         private bool OrderExists(int id)

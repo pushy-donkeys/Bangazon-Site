@@ -10,6 +10,8 @@ using Microsoft.Extensions.Options;
 using BangazonWebsite.Models;
 using BangazonWebsite.Models.ManageViewModels;
 using BangazonWebsite.Services;
+using BangazonWebsite.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BangazonWebsite.Controllers
 {
@@ -22,6 +24,8 @@ namespace BangazonWebsite.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        private readonly ApplicationDbContext _context;
+
 
         public ManageController(
           UserManager<ApplicationUser> userManager,
@@ -29,7 +33,7 @@ namespace BangazonWebsite.Controllers
           IOptions<IdentityCookieOptions> identityCookieOptions,
           IEmailSender emailSender,
           ISmsSender smsSender,
-          ILoggerFactory loggerFactory)
+          ILoggerFactory loggerFactory, ApplicationDbContext ctx)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -37,6 +41,7 @@ namespace BangazonWebsite.Controllers
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<ManageController>();
+            _context = ctx;
         }
 
         //
@@ -58,16 +63,85 @@ namespace BangazonWebsite.Controllers
             {
                 return View("Error");
             }
-            var model = new IndexViewModel
+            var model = new IndexViewModel()
             {
-                HasPassword = await _userManager.HasPasswordAsync(user),
-                PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
-                TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
-                Logins = await _userManager.GetLoginsAsync(user),
-                BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user)
+                ApplicationUser = user
             };
             return View(model);
         }
+
+        [Authorize]
+        public async Task<IActionResult> EditProfile(string id)
+        {
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return NotFound("Error");  
+            }
+
+            IndexViewModel User = new IndexViewModel()
+            {
+                ApplicationUser = user
+            };
+
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            if(User.ApplicationUser == null)
+            {
+                return NotFound();
+            }
+               return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(string id, IndexViewModel IndVM)
+        {
+            if(IndVM == null)
+            {
+                throw new ArgumentNullException(nameof(IndVM));
+            }
+
+            var user = await GetCurrentUserAsync();
+            user.Firstname = IndVM.ApplicationUser.Firstname;
+            user.Lastname = IndVM.ApplicationUser.Lastname;
+            user.City = IndVM.ApplicationUser.City;
+            user.streetadress = IndVM.ApplicationUser.streetadress;
+            user.PhoneNumber = IndVM.ApplicationUser.PhoneNumber;
+
+            if (id != user.Id)
+            {
+                return NotFound();
+            }
+
+            if(ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
+                }
+                catch(DbUpdateConcurrencyException)
+                {
+                    if(!ApplicationUserExists(IndVM.ApplicationUser.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Index");
+            }
+            return View("Index");
+        }
+
+
 
         //
         // POST: /Manage/RemoveLogin
@@ -366,6 +440,11 @@ namespace BangazonWebsite.Controllers
         private Task<ApplicationUser> GetCurrentUserAsync()
         {
             return _userManager.GetUserAsync(HttpContext.User);
+        }
+
+        private bool ApplicationUserExists(string id)
+        { 
+            return _context.ApplicationUser.Any(e => e.Id == id);
         }
 
         #endregion
