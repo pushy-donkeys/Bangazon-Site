@@ -24,7 +24,7 @@ namespace BangazonWebsite.Data
             // Add your customizations after calling base.OnModelCreating(builder);
         }
         public DbSet<BangazonWebsite.Models.ProductType> ProductType { get; set; }
-
+        public DbSet<BangazonWebsite.Models.ApplicationUser> ApplicationUser { get; set; }
         public DbSet<BangazonWebsite.Models.Order> Order { get; set; }
         public DbSet<BangazonWebsite.Models.PaymentType> PaymentType { get; set; }
         public DbSet<BangazonWebsite.Models.Product> Product { get; set; }

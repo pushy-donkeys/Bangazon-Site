@@ -1,8 +1,4 @@
-
-
-<!--- @**@ model IEnumerable<BangazonWebsite.Models.ProductType>   --->
-
-@Model  BangazonWebsite.Models.ViewModels.ProductTypeIndexViewModel
+@model  BangazonWebsite.Models.ViewModels.ProductTypeIndexViewModel
 @{
     ViewData["Title"] = "Product Type Listing";
 }
@@ -11,7 +7,7 @@
 
 @foreach (var types in Model.TypesList)
 {
-    @types
+
     <div class="row top-buffer">
         <div class="col-md-8">@types.TypeName</div>
         <div class="col-md-2">@types.ProductCount</div>

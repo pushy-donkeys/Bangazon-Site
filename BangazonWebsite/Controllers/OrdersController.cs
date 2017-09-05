@@ -9,7 +9,9 @@ using BangazonWebsite.Data;
 using BangazonWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using BangazonWebsite.Models.ViewModels;
 using Microsoft.AspNetCore.Hosting;
+
 
 namespace BangazonWebsite.Controllers
 {
@@ -18,6 +20,8 @@ namespace BangazonWebsite.Controllers
         //necessary for getting user id:
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private ApplicationUser currentUser { get; set; }
+
         private IHostingEnvironment _environment;
 
         public OrdersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IHostingEnvironment environment)
@@ -186,7 +190,47 @@ namespace BangazonWebsite.Controllers
             return RedirectToAction("Details");
         }
 
+
+        //GET FOR ORDER HISTORY
+        //BY: RYAN MCCARTY
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OrderHistory(string id)
+        {
+            //GET CURRENT USER
+            var user = await GetCurrentUserAsync();
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            //QUERY ORDER TO GET BACK ORDER WITH A PAYMENTTYPEID
+            var orders = await _context.Order
+                .Where(m => m.User == user && m.PaymentTypeId != null).ToListAsync();
+            if (orders == null)
+            {
+                return NotFound();
+            }
+
+            return View(orders);
+        }
+
+        public IActionResult CompletedOrderDetail(int? id)
+        {
+            OrderProductViewModel opvm = new OrderProductViewModel(id, _context);
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            return View(opvm);
+        }
+
+
         //not on delete
+
         private bool OrderExists(int id)
         {
             return _context.Order.Any(e => e.OrderId == id);
