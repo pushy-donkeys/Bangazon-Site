@@ -70,9 +70,11 @@ namespace BangazonWebsite.Controllers
             return View(model);
         }
 
+        //BY: RYAN MCCARTY
         [Authorize]
         public async Task<IActionResult> EditProfile(string id)
         {
+            //GET THE CURRENT USER
             var user = await GetCurrentUserAsync();
             if (user == null)
             {
@@ -96,6 +98,8 @@ namespace BangazonWebsite.Controllers
                return View();
         }
 
+
+        //BY: RYAN MCCARTY
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -106,6 +110,7 @@ namespace BangazonWebsite.Controllers
                 throw new ArgumentNullException(nameof(IndVM));
             }
 
+            //PASS IN ALL THE VALUES FROM THE VIEW MODEL THAT WILL BE UPDATED
             var user = await GetCurrentUserAsync();
             user.Firstname = IndVM.ApplicationUser.Firstname;
             user.Lastname = IndVM.ApplicationUser.Lastname;
@@ -442,6 +447,7 @@ namespace BangazonWebsite.Controllers
             return _userManager.GetUserAsync(HttpContext.User);
         }
 
+        //CHECKS TO SEE IF THE USERID EXISTS 
         private bool ApplicationUserExists(string id)
         { 
             return _context.ApplicationUser.Any(e => e.Id == id);

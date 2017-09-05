@@ -17,11 +17,16 @@ namespace BangazonWebsite.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private ApplicationUser currentUser { get; set; }
 
-        public OrdersController(ApplicationDbContext context)
+
+        public OrdersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            _context = context;    
+            _context = context;
+            _userManager = userManager;
         }
+
+        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
         // GET: Orders
         [Authorize]
@@ -167,17 +172,39 @@ namespace BangazonWebsite.Controllers
             return RedirectToAction("Index");
         }
 
+        //GET FOR ORDER HISTORY
+        //BY: RYAN MCCARTY
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> OrderHistory(int? id)
+        public async Task<IActionResult> OrderHistory(string id)
         {
-            var opvm = new OrderProductViewModel(id, _context);
+            //GET CURRENT USER
+            var user = await GetCurrentUserAsync();
 
-            if(id == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
+            //QUERY ORDER TO GET BACK ORDER WITH A PAYMENTTYPEID
+            var orders = await _context.Order
+                .Where(m => m.User == user && m.PaymentTypeId != null).ToListAsync();
+            if (orders == null)
+            {
+                return NotFound();
+            }
+
+            return View(orders);
+        }
+
+        public IActionResult CompletedOrderDetail(int? id)
+        {
+            OrderProductViewModel opvm = new OrderProductViewModel(id, _context);
+
+            if (id == null)
+            {
+                return NotFound();
+            }
 
             return View(opvm);
         }
