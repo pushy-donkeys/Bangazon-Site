@@ -93,7 +93,7 @@ namespace BangazonWebsite.Controllers
                 return NotFound();
             }
             //check for orders
-            //first checking if user on order is the same as current user, and if PT is null (incomplete order)
+            //first checking if user on order is the same as current user, and if PaymentType is null (incomplete order)
             var currentOrders = await _context.Order
                 .SingleOrDefaultAsync(m => m.User == user && m.PaymentTypeId == null);
 

@@ -6,30 +6,35 @@
 
 <h2>Index</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h2>My Shopping Cart</h2>
+
+<h4>Order</h4>
+<hr />
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.PaymentType)
+                Product
             </th>
-            <th></th>
+            <th>
+                Price
+            </th>
+            <th>
+                Category
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentType.AccountNumber)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
-            </td>
-        </tr>
-}
+        @*Loop through OrderProduct ICollection*@
+
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>
+                    <p>@order.PaymentType</p>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
