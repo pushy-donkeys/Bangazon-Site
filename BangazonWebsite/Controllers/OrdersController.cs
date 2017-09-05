@@ -164,9 +164,8 @@ namespace BangazonWebsite.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Order
-                .Include(o => o.PaymentType)
-                .SingleOrDefaultAsync(m => m.OrderId == id);
+            var order = await _context.OrderProduct
+                .SingleOrDefaultAsync(m => m.OrderProductId == id);
             if (order == null)
             {
                 return NotFound();
@@ -181,12 +180,13 @@ namespace BangazonWebsite.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = await _context.Order.SingleOrDefaultAsync(m => m.OrderId == id);
-            _context.Order.Remove(order);
+            var orderproduct = await _context.OrderProduct.SingleOrDefaultAsync(m => m.OrderProductId == id);
+            _context.OrderProduct.Remove(orderproduct);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("Details");
         }
 
+        //not on delete
         private bool OrderExists(int id)
         {
             return _context.Order.Any(e => e.OrderId == id);

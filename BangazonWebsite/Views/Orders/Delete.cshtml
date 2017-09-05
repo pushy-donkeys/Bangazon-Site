@@ -1,4 +1,4 @@
-@model BangazonWebsite.Models.Order
+@model BangazonWebsite.Models.OrderProduct
 
 @{
     ViewData["Title"] = "Delete";
@@ -11,16 +11,11 @@
     <h4>Order</h4>
     <hr />
     <dl class="dl-horizontal">
-        <input type="hidden" asp-for="OrderId" />
-        <dt>
-            @Html.DisplayNameFor(model => model.PaymentType)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PaymentType.AccountNumber)
-        </dd>
     </dl>
     
     <form asp-action="Delete">
+        @*Next line is passing back the orderproductid but user can't see it or change it*@
+        <input type="hidden" asp-for="OrderProductId" />
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-default" /> |
             <a asp-action="Index">Back to List</a>
