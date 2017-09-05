@@ -34,6 +34,19 @@ namespace BangazonWebsite.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        // GET: Products
+        [Authorize]
+        public async Task<IActionResult> MyProducts()
+        {
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var applicationDbContext = _context.Product.Where(p => p.User == user);
+            return View(await applicationDbContext.ToListAsync());
+        }
+
         //GET SEARCH PRODUCT
         [Authorize]
         public async Task<IActionResult> Search(string searchFor, string searchText)
