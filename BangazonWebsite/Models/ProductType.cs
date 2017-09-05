@@ -13,7 +13,7 @@ namespace BangazonWebsite.Models
         public int ProductTypeId { get; set; }
 
         [StringLength(255)]
-        [Display(Name="Category")]
+        [Display(Name = "Category")]
         public string Label { get; set; }
 
         public virtual ICollection<Product> Products { get; set; }
