@@ -16,6 +16,7 @@ namespace BangazonWebsite.Models
         [StringLength(12)]
         public string Description { get; set; }
 
+        public bool Deleted { get; set; }
         [Required]
         [StringLength(20)]
         public string AccountNumber { get; set; }
