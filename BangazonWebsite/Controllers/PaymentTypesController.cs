@@ -26,22 +26,33 @@ namespace BangazonWebsite.Controllers
 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
-        // GET: PaymentTypes
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.PaymentType.ToListAsync());
-        }
+
 
         // GET: PaymentTypes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            var user = await GetCurrentUserAsync();
+            if(id == null)
             {
                 return NotFound();
             }
 
             var paymentType = await _context.PaymentType
                 .SingleOrDefaultAsync(m => m.PaymentTypeId == id);
+            if (paymentType == null)
+            {
+                return NotFound();
+            }
+
+            return View(paymentType);
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var user = await GetCurrentUserAsync();
+
+            var paymentType = await _context.PaymentType
+                .Where(m => m.User == user).ToListAsync();
             if (paymentType == null)
             {
                 return NotFound();

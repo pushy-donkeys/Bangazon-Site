@@ -37,8 +37,19 @@ namespace BangazonWebsite.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Order.Include(o => o.PaymentType);
-            return View(await applicationDbContext.ToListAsync());
+            //var applicationDbContext = _context.Order.Include(o => o.PaymentType);
+            //return View(await applicationDbContext.ToListAsync());
+
+            var user = await GetCurrentUserAsync();
+
+            var orderIndex = await _context.Order
+                .Where(m => m.User == user).ToListAsync();
+            if (orderIndex == null)
+            {
+                return NotFound();
+            }
+
+            return View(orderIndex);
         }
 
         // GET: Orders/Details/5
@@ -195,7 +206,7 @@ namespace BangazonWebsite.Controllers
         //BY: RYAN MCCARTY
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> OrderHistory(string id)
+        public async Task<IActionResult> OrderHist(string id)
         {
             //GET CURRENT USER
             var user = await GetCurrentUserAsync();
