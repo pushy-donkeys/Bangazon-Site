@@ -204,17 +204,14 @@ namespace BangazonWebsite.Controllers
 
         //GET FOR ORDER HISTORY
         //BY: RYAN MCCARTY
+        
+        [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> OrderHist(string id)
+        public async Task<IActionResult> OrderHist()
         {
             //GET CURRENT USER
             var user = await GetCurrentUserAsync();
 
-            if (id == null)
-            {
-                return NotFound();
-            }
 
             //QUERY ORDER TO GET BACK ORDER WITH A PAYMENTTYPEID
             var orders = await _context.Order
