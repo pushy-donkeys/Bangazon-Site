@@ -6,7 +6,6 @@
 
 <h2>Index</h2>
 
-<h2>My Shopping Cart</h2>
 
 <h4>Order</h4>
 <hr />
@@ -14,24 +13,27 @@
     <thead>
         <tr>
             <th>
-                Product
+                Order Id
             </th>
-            <th>
-                Price
-            </th>
-            <th>
-                Category
-            </th>
+
         </tr>
     </thead>
     <tbody>
         @*Loop through OrderProduct ICollection*@
 
-        @foreach (var order in Model)
+        @foreach (var item in Model)
         {
             <tr>
                 <td>
-                    <p>@order.PaymentType</p>
+                    @Html.DisplayFor(modelItem => item.OrderId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderProduct)
+                </td>
+                <td>
+                 
+                    <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> 
+                    <a asp-action="OrderHist">Order History</a>
                 </td>
             </tr>
         }

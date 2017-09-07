@@ -35,6 +35,7 @@ namespace BangazonWebsite.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
+
             var applicationDbContext = _context.Product.Include(p => p.ProductType);
             return View(await applicationDbContext.ToListAsync());
         }
